@@ -30,7 +30,7 @@ table{width:100%;border-collapse:collapse;font-size:13px;table-layout:auto;}
 th{background:#fff;color:#111827;padding:12px 14px;text-align:center;font-weight:700;white-space:nowrap;position:sticky;top:0;font-size:13px;border-bottom:2px solid #e5e7eb;}
 /* 表头中英文两行:中文在上,英文在下 */
 .th-zh{display:block;font-size:13px;color:#111827;font-weight:700;line-height:1.3;}
-.th-en{display:block;font-size:10px;color:#6b7280;font-weight:500;line-height:1.3;margin-top:2px;}
+.th-en{display:block;font-size:10px;color:#6b7280;font-weight:500;line-height:1.3;margin-top:2px;white-space:normal;word-break:break-word;}
 td{padding:10px 14px;border-bottom:1px solid #f0f0f0;text-align:center;vertical-align:middle;white-space:nowrap;overflow:hidden;font-size:13px;}
 tr:hover{background:#f8fafc;}
 .col-desc{text-align:left;white-space:normal;line-height:1.6;min-width:200px;color:#333;}
@@ -586,7 +586,7 @@ div[onclick="openAdminModal()"]:hover{
 #qTable td{font-size:13px;color:#2A3646;}
 /* 表头加粗英文副标题，弱化上下分割线：更贴近深蓝底 */
 #qTable thead th{font-weight:800;}
-#qTable thead th .th-en{color:#4A5B72;font-weight:600;opacity:1;}
+#qTable thead th .th-en{color:#4A5B72;font-weight:600;opacity:1;white-space:normal;word-break:break-word;}
 /* 首列(系列)加粗，区分冻结列 */
 #qTable td.col-freeze{color:var(--navy-800);font-weight:700;}
 /* 隔行斑马纹更柔和，提升可读性 */
@@ -634,7 +634,7 @@ h1,h2,h3,h4,strong,b{font-weight:700;color:#2A2F38;}
 <div style="background:linear-gradient(180deg,#EAF2FC,#DEEBFA);padding:20px 24px;color:#fff;text-align:left;">
     <h1 style="font-size:22px;font-weight:800;margin:0 0 6px 0;color:#1E3A5F;letter-spacing:1.5px;">非标方案统计查询表</h1>
     <p style="font-size:13px;margin:0 0 4px 0;color:#1E3A5F;font-weight:700;">LED 显示屏非标方案快速查询工具</p>
-    <p style="font-size:13px;margin:0;color:#3A5A7A;line-height:1.7;">支持按产品系列 / 类别筛选，全局搜索即可快速定位所需方案的需求描述、方案描述与订单号。</p>
+    <p style="font-size:13px;margin:0;color:#3A5A7A;line-height:1.7;">支持按产品线 / 产品系列 / 非标类型 / 产品型号联动筛选，全局搜索即可快速定位所需方案的产品型号、方案描述与订单号。</p>
 </div>
 
 <!-- 方案速查页 -->
@@ -642,13 +642,15 @@ h1,h2,h3,h4,strong,b{font-weight:700;color:#2A2F38;}
     <div id="qMain" class="sub-page active">
         <div class="search-bar">
             <span class="search-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></span>
-            <input type="text" id="qGlobalSearch" placeholder="全局搜索：产品型号 / 需求描述 / 方案描述 / 订单号（支持空格分词，如：A25 应用场景 海边）" autocomplete="off">
+            <input type="text" id="qGlobalSearch" placeholder="全局搜索：产品线 / 产品系列 / 非标类型 / 产品型号 / 非标等级 / 方案描述 / 订单号 / 售前工程师（支持空格分词，如：A25 应用场景 海边）" autocomplete="off">
             <button class="search-clear" id="qSearchClear" onclick="clearGlobalSearch()" title="清除搜索">✕</button>
             <span class="search-tip" id="qSearchTip"></span>
         </div>
         <div class="filter-bar">
+            <div class="filter-item"><label>产品线</label><div class="combobox" id="cb-qLine" data-default="全部产品线"><input type="text" class="combobox-input" value="全部产品线" autocomplete="off"><span class="combobox-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span><div class="combobox-list"></div></div></div>
             <div class="filter-item"><label>产品系列</label><div class="combobox" id="cb-qSeries" data-default="全部系列"><input type="text" class="combobox-input" value="全部系列" autocomplete="off"><span class="combobox-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span><div class="combobox-list"></div></div></div>
-            <div class="filter-item"><label>类别</label><div class="combobox" id="cb-qType" data-default="全部类别"><input type="text" class="combobox-input" value="全部类别" autocomplete="off"><span class="combobox-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span><div class="combobox-list"></div></div></div>
+            <div class="filter-item"><label>非标类型</label><div class="combobox" id="cb-qType" data-default="全部类别"><input type="text" class="combobox-input" value="全部类别" autocomplete="off"><span class="combobox-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span><div class="combobox-list"></div></div></div>
+            <div class="filter-item"><label>产品型号</label><div class="combobox" id="cb-qModel" data-default="全部型号"><input type="text" class="combobox-input" value="全部型号" autocomplete="off"><span class="combobox-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span><div class="combobox-list"></div></div></div>
             <button class="btn btn-reset" type="button" onclick="resetQueryFilter()">↺ 重置筛选</button>
             <button class="btn btn-export" type="button" onclick="exportExcel()">⬇ 导出Excel</button>
             <span class="count-info" id="qCount"></span>
@@ -735,13 +737,13 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
 
 // ===== 方案站数据定义 =====
-const DEFAULT_DATA={"rawData": [{"产品系列": "A25", "类别": "更换灯珠", "产品型号": "A0625", "需求描述": "", "方案描述": "", "订单号": ""}, {"产品系列": "A25", "类别": "内弧形", "产品型号": "", "需求描述": "", "方案描述": "", "订单号": ""}, {"产品系列": "A25", "类别": "外弧形", "产品型号": "", "需求描述": "", "方案描述": "", "订单号": ""}, {"产品系列": "A25", "类别": "切角", "产品型号": "", "需求描述": "", "方案描述": "", "订单号": ""}, {"产品系列": "A25", "类别": "应用场景", "产品型号": "", "需求描述": "海边环境使用", "方案描述": "海边环境，模组PCB背面，接收卡 ，HUB板喷三防漆，使用不锈钢连接片和螺丝，包括备品模组PCB背面喷三防，备品转接板和接收卡均需刷三防；如使用库存单，则模组 PCB 背面和备品模组 PCB 背面无需额外喷三防。", "订单号": "HK262233A"}], "historyData": [{"日期": "2026-09-05", "修订内容": "首版非标方案统计查询表", "编辑人": "杜辉"}]};
-const RAW_FIELDS=['产品系列','类别','产品型号','需求描述','方案描述','订单号'];
-const FIELD_EN={'产品系列':'Series','类别':'Type','产品型号':'Product Model','需求描述':'Requirement','方案描述':'Proposal','订单号':'Order Number'};
+const DEFAULT_DATA={"rawData": [{"产品线": "Proav产品线", "产品系列": "NX", "非标类型": "更换系统卡", "产品型号": "NX2.5-V1X", "非标等级": "非标3级", "方案描述": "NX2.5-V1X更换A10S PRO卡，定制接收卡程序支持峰值亮度功能，重新做FCC认证", "订单号": "US250088A", "售前工程师": "汪涛"}, {"产品线": "广告产品线", "产品系列": "A25", "非标类型": "更换LED灯", "产品型号": "NT2.9W V2", "非标等级": "非标3级", "方案描述": "整单换国星白灯31002SMD00000R143 009 1415 B 白灯 NH-Z1415RGBA-SG，亮度做到4500nit，订单RD250113A做过", "订单号": "HK253379A", "售前工程师": "王毓"}, {"产品线": "舞台产品线", "产品系列": "FL V2", "非标类型": "更换LED灯", "产品型号": "FL2.9W V2", "非标等级": "非标3级", "方案描述": "整单换国星白灯31002SMD00000R143 009 1415 B 白灯 NH-Z1415RGBA-SG，亮度做到4500nit。", "订单号": "HK253379B", "售前工程师": "王毓"}, {"产品线": "舞台产品线", "产品系列": "NT V2", "非标类型": "更换系统卡", "产品型号": "NT2.6 V2", "非标等级": "非标4级", "方案描述": "整单接收卡换为A10s Pro接收卡，料号为：30190RXA10S00R029（内含诺瓦核心板嵌入式软件V1.7）中性版 A10s Pro 诺瓦，订单HK252884B做过。", "订单号": "HK261678A", "售前工程师": "王毓"}, {"产品线": "广告产品线", "产品系列": "A25", "非标类型": "应用场景", "产品型号": "A0625", "非标等级": "非标4级", "方案描述": "海边环境，模组PCB背面，接收卡 ，HUB板喷三防漆，使用不锈钢连接片和螺丝，包括备品模组PCB背面喷三防，备品转接板和接收卡均需刷三防；如使用库存单，则模组 PCB 背面和备品模组 PCB 背面无需额外喷三防。", "订单号": "HK262233A", "售前工程师": "杜辉"}], "historyData": [{"日期": "2026-09-05", "修订内容": "首版非标方案统计查询表", "编辑人": "杜辉"}]};
+const RAW_FIELDS=['产品线','产品系列','非标类型','产品型号','非标等级','方案描述','订单号','售前工程师'];
+const FIELD_EN={'产品线':'Product Line','产品系列':'Product Series','非标类型':'Type','产品型号':'Product Model','非标等级':'Non-standard Grade','方案描述':'Proposal Description','订单号':'Order Number','售前工程师':'Pre-sales Engineer'};
 // 表头生成：i===0 首列冻结；需求/方案描述表头左对齐(th-left)
 function fieldTh(f,extra){
     const cls=((extra||'').trim()||'qth');
-    const left=(f==='需求描述'||f==='方案描述')?' th-left':'';
+    const left=(f==='方案描述')?' th-left':'';
     return '<th class="'+cls+left+'"><span class="th-zh">'+esc(f)+'</span><span class="th-en">'+esc(FIELD_EN[f]||'')+'</span></th>';
 }
 const STORAGE_KEY='nst_solution_data_v1';
@@ -749,9 +751,14 @@ let isDirty=false;
 
 let rawData=[];
 let historyData=[];
+let _allLines=[];
+let _allSeries=[];
 let _allTypes=[];
+let _allModels=[];
+let _lineCombobox=null;
 let _seriesCombobox=null;
 let _typeCombobox=null;
+let _modelCombobox=null;
 
 function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 function unique(arr){return [...new Set(arr.filter(Boolean))];}
@@ -825,32 +832,77 @@ function setComboboxValue(id,value){const cb=document.getElementById('cb-'+id);i
 function clearCombobox(id){const cb=document.getElementById('cb-'+id);if(cb){const def=cb.getAttribute('data-default')||'';cb.querySelector('.combobox-input').value=def;}}
 function setComboboxDisabled(id,disabled){const cb=document.getElementById('cb-'+id);if(!cb)return;cb.classList.toggle('disabled',disabled);cb.querySelector('.combobox-input').disabled=disabled;if(disabled)cb.classList.remove('open');}
 
-// ===== 类别选项：按系列过滤；series='全部系列'/空 返回全部 =====
+// ===== 级联筛选：产品线 → 产品系列 → 非标类型 / 产品型号 =====
+// 非标类型选项：按【当前产品线+产品系列】过滤；series='全部系列'/空 -> 仅按当前产品线过滤
 function typeOptionsForSeries(series){
-    if(!series||series==='全部系列')return _allTypes;
-    return unique(rawData.filter(d=>String(d['产品系列']||'').trim()===series.trim()).map(d=>String(d['类别']||'').trim()).filter(Boolean));
+    const ln=getComboboxValue('qLine');
+    let pool=rawData;
+    if(ln&&ln!=='全部产品线')pool=pool.filter(d=>String(d['产品线']||'').trim()===ln.trim());
+    if(series&&series!=='全部系列')pool=pool.filter(d=>String(d['产品系列']||'').trim()===series.trim());
+    return unique(pool.map(d=>String(d['非标类型']||'').trim()).filter(Boolean));
+}
+// 产品型号选项：按【当前产品线+产品系列】过滤
+function modelOptionsForSeries(series){
+    const ln=getComboboxValue('qLine');
+    let pool=rawData;
+    if(ln&&ln!=='全部产品线')pool=pool.filter(d=>String(d['产品线']||'').trim()===ln.trim());
+    if(series&&series!=='全部系列')pool=pool.filter(d=>String(d['产品系列']||'').trim()===series.trim());
+    return unique(pool.map(d=>String(d['产品型号']||'').trim()).filter(Boolean));
 }
 function onSeriesChanged(value){
     const types=typeOptionsForSeries(value);
     if(_typeCombobox)_typeCombobox._setOpts(['全部类别',...types]);
     const cur=getComboboxValue('qType');
     if(cur!=='全部类别'&&!types.includes(cur))setComboboxValue('qType','全部类别');
+    const models=modelOptionsForSeries(value);
+    if(_modelCombobox)_modelCombobox._setOpts(['全部型号',...models]);
+    const curM=getComboboxValue('qModel');
+    if(curM!=='全部型号'&&!models.includes(curM))setComboboxValue('qModel','全部型号');
     renderQueryTable();
+}
+function onLineChanged(value){
+    // 产品线变化 -> 重置系列选项
+    const sers=seriesOptionsForLine(value);
+    if(_seriesCombobox)_seriesCombobox._setOpts(['全部系列',...sers]);
+    const cur=getComboboxValue('qSeries');
+    if(cur!=='全部系列'&&!sers.includes(cur))setComboboxValue('qSeries','全部系列');
+    // 系列重置后 -> 类型按当前(线+系列)联动
+    onSeriesChanged(getComboboxValue('qSeries'));
+}
+function seriesOptionsForLine(line){
+    if(!line||line==='全部产品线')return unique(rawData.map(d=>String(d['产品系列']||'').trim()).filter(Boolean));
+    return unique(rawData.filter(d=>String(d['产品线']||'').trim()===line.trim()).map(d=>String(d['产品系列']||'').trim()).filter(Boolean));
 }
 function resetTypeDropdownToAll(){
     if(_typeCombobox)_typeCombobox._setOpts(['全部类别',..._allTypes]);
     setComboboxValue('qType','全部类别');
 }
+function resetModelDropdownToAll(){
+    if(_modelCombobox)_modelCombobox._setOpts(['全部型号',..._allModels]);
+    setComboboxValue('qModel','全部型号');
+}
+function resetSeriesDropdownToAll(){
+    if(_seriesCombobox)_seriesCombobox._setOpts(['全部系列',..._allSeries]);
+    setComboboxValue('qSeries','全部系列');
+}
+function resetLineDropdownToAll(){
+    if(_lineCombobox)_lineCombobox._setOpts(['全部产品线',..._allLines]);
+    setComboboxValue('qLine','全部产品线');
+}
 
 function getGlobalKeyword(){const el=document.getElementById('qGlobalSearch');return el?el.value.trim():'';}
 function getGlobalKeywords(){const kw=getGlobalKeyword();if(!kw)return [];return kw.split(/[\s,，、]+/).map(x=>x.trim()).filter(Boolean);}
-function rowMatchesKeyword(row,keywords){if(!keywords.length)return true;const fields=['产品型号','需求描述','方案描述','订单号','产品系列','类别'];const text=fields.map(f=>String(row[f]||'')).join(' ').toLowerCase();return keywords.every(k=>text.includes(k.toLowerCase()));}
+function rowMatchesKeyword(row,keywords){if(!keywords.length)return true;const fields=['产品线','产品系列','非标类型','产品型号','非标等级','方案描述','订单号','售前工程师'];const text=fields.map(f=>String(row[f]||'')).join(' ').toLowerCase();return keywords.every(k=>text.includes(k.toLowerCase()));}
 function getQueryFiltered(){
     let result=rawData;
+    const ln=getComboboxValue('qLine');
     const s=getComboboxValue('qSeries');
     const t=getComboboxValue('qType');
+    const m=getComboboxValue('qModel');
+    if(ln&&ln!=='全部产品线')result=result.filter(r=>(String(r['产品线']||'').trim())===ln.trim());
     if(s&&s!=='全部系列')result=result.filter(r=>(String(r['产品系列']||'').trim())===s.trim());
-    if(t&&t!=='全部类别')result=result.filter(r=>(String(r['类别']||'').trim())===t.trim());
+    if(t&&t!=='全部类别')result=result.filter(r=>(String(r['非标类型']||'').trim())===t.trim());
+    if(m&&m!=='全部型号')result=result.filter(r=>(String(r['产品型号']||'').trim())===m.trim());
     const keywords=getGlobalKeywords();
     if(keywords.length)result=result.filter(r=>rowMatchesKeyword(r,keywords));
     return result;
@@ -866,6 +918,8 @@ function highlightWord(text,keywords){
     return t;
 }
 function onQueryFilter(){
+    const ln=getComboboxValue('qLine');
+    if(_lineCombobox)onLineChanged(ln);
     const s=getComboboxValue('qSeries');
     if(_seriesCombobox)onSeriesChanged(s);
     currentPage=1;
@@ -873,16 +927,22 @@ function onQueryFilter(){
     renderQueryTable();
 }
 function resetQueryFilter(){
+    clearCombobox('qLine');
     clearCombobox('qSeries');
     clearCombobox('qType');
+    clearCombobox('qModel');
+    resetLineDropdownToAll();
+    resetSeriesDropdownToAll();
     resetTypeDropdownToAll();
+    resetModelDropdownToAll();
     currentPage=1;
     renderActiveFilters();
     renderQueryTable();
 }
 function removeFilterChip(id){
     clearCombobox(id);
-    if(id==='qSeries')resetTypeDropdownToAll();
+    if(id==='qLine'){resetSeriesDropdownToAll();resetTypeDropdownToAll();resetModelDropdownToAll();}
+    else if(id==='qSeries'){resetTypeDropdownToAll();resetModelDropdownToAll();}
     currentPage=1;
     renderActiveFilters();
     renderQueryTable();
@@ -891,12 +951,12 @@ function renderActiveFilters(){
     const cont=document.getElementById('activeFilters');
     if(!cont)return;
     cont.innerHTML='';
-    const defs={qSeries:'全部系列',qType:'全部类别'};
-    const labels={qSeries:'系列',qType:'类别'};
+    const defs={qLine:'全部产品线',qSeries:'全部系列',qType:'全部类别',qModel:'全部型号'};
+    const labels={qLine:'产品线',qSeries:'产品系列',qType:'非标类型',qModel:'产品型号'};
     const items=[];
     const searchKw=getGlobalKeyword();
     if(searchKw)items.push({key:'_search',label:'搜索:'+searchKw});
-    ['qSeries','qType'].forEach(id=>{
+    ['qLine','qSeries','qType','qModel'].forEach(id=>{
         const v=getComboboxValue(id);
         if(v&&v!==defs[id])items.push({key:id,label:labels[id]+':'+v});
     });
@@ -921,8 +981,8 @@ function onRemoveChip(key){if(key==='_search'){clearGlobalSearch();return;}remov
 function onClearAllFilters(){resetQueryFilter();clearGlobalSearch(true);}
 let currentPage=1;
 const PAGE_SIZE=20;
-// 列宽：产品系列/类别/型号较窄，需求描述/方案描述较宽
-const COL_WIDTHS={'产品系列':'9%','类别':'12%','产品型号':'13%','需求描述':'24%','方案描述':'27%','订单号':'15%'};
+// 列宽：产品线/系列/类型/型号/等级较窄，方案描述较宽，工程师最窄
+const COL_WIDTHS={'产品线':'9%','产品系列':'10%','非标类型':'13%','产品型号':'12%','非标等级':'11%','方案描述':'25%','订单号':'11%','售前工程师':'9%'};
 
 function renderQueryTable(){
     const data=getQueryFiltered();
@@ -934,17 +994,17 @@ function renderQueryTable(){
     // 表头（带列宽）
     document.getElementById('qHead').innerHTML=RAW_FIELDS.map((f,i)=>{
         const w=COL_WIDTHS[f]?(' style="width:'+COL_WIDTHS[f]+';"'):'';
-        return '<th class="'+(i===0?'col-freeze ':'')+((f==='需求描述'||f==='方案描述')?'th-left':'').trim()+'"'+w+'><span class="th-zh">'+esc(f)+'</span><span class="th-en">'+esc(FIELD_EN[f]||'')+'</span></th>';
+        return '<th class="'+(i===0?'col-freeze ':'')+((f==='方案描述')?'th-left':'').trim()+'"'+w+'><span class="th-zh">'+esc(f)+'</span><span class="th-en">'+esc(FIELD_EN[f]||'')+'</span></th>';
     }).join('');
     const body=document.getElementById('qBody');
-    if(data.length===0){body.innerHTML='<tr><td colspan="6" class="no-result">未找到匹配数据</td></tr>';renderPagination(0,1);renderActiveFilters();return;}
+    if(data.length===0){body.innerHTML='<tr><td colspan="8" class="no-result">未找到匹配数据</td></tr>';renderPagination(0,1);renderActiveFilters();return;}
     const start=(currentPage-1)*PAGE_SIZE;
     const pageData=data.slice(start,start+PAGE_SIZE);
     body.innerHTML=pageData.map(row=>'<tr>'+RAW_FIELDS.map((f,i)=>{
         let raw=String(row[f]||'');
         const val=esc(raw);
-        const hl=(keywords.length&&(f==='产品型号'||f==='需求描述'||f==='方案描述'||f==='订单号'))?highlightWord(raw,keywords):val;
-        const cls='class="'+(i===0?'col-freeze':((f==='需求描述'||f==='方案描述')?'col-desc':(f==='产品型号'?'col-model':'')))+'"';
+        const hl=(keywords.length&&(f==='产品型号'||f==='方案描述'||f==='订单号'))?highlightWord(raw,keywords):val;
+        const cls='class="'+(i===0?'col-freeze':((f==='方案描述')?'col-desc':(f==='产品型号'?'col-model':'')))+'"';
         if(f==='订单号')return '<td '+cls+'><span class="sap-copy" onclick="copySap(this)" title="点击复制">'+val+'</span></td>';
         return '<td '+cls+'>'+hl+'</td>';
     }).join('')+'</tr>').join('');
@@ -972,18 +1032,25 @@ function goToPage(p){currentPage=p;renderQueryTable();window.scrollTo({top:docum
 function prevPage(){if(currentPage>1){currentPage--;renderQueryTable();window.scrollTo({top:document.querySelector('.table-wrap').offsetTop-20,behavior:'smooth'});}}
 function nextPage(){const total=getQueryFiltered().length;const tp=Math.max(1,Math.ceil(total/PAGE_SIZE));if(currentPage<tp){currentPage++;renderQueryTable();window.scrollTo({top:document.querySelector('.table-wrap').offsetTop-20,behavior:'smooth'});}}
 function buildExportName(){
+    const ln=getComboboxValue('qLine');
     const s=getComboboxValue('qSeries');
     const t=getComboboxValue('qType');
-    const series=(s&&s!=='全部系列')?s:'';
-    const type=(t&&t!=='全部类别')?t:'';
+    const m=getComboboxValue('qModel');
     const clean=v=>String(v||'').replace(/[\\\/:*?"<>|]+/g,'_').replace(/^[\s.]+|[\s.]+$/g,'').replace(/\s+/g,'_');
-    const seriesC=clean(series), typeC=clean(type);
-    let label;
-    if(seriesC&&typeC)label=seriesC+'_'+typeC;
-    else if(seriesC)label=seriesC+'_全部类别';
-    else if(typeC)label='全部系列_'+typeC;
-    else label='全部';
-    return '方案数据_'+label+'_'+new Date().toISOString().slice(0,10)+'.xls';
+    const line=clean((ln&&ln!=='全部产品线')?ln:'');
+    const series=clean((s&&s!=='全部系列')?s:'');
+    const type=clean((t&&t!=='全部类别')?t:'');
+    const model=clean((m&&m!=='全部型号')?m:'');
+    let parts=[];
+    if(line)parts.push(line);
+    else parts.push('全部产品线');
+    if(series)parts.push(series);
+    else parts.push('全部系列');
+    if(type)parts.push(type);
+    else parts.push('全部类型');
+    if(model)parts.push(model);
+    else parts.push('全部型号');
+    return '方案数据_'+parts.join('_')+'_'+new Date().toISOString().slice(0,10)+'.xls';
 }
 function exportExcel(){
     const data=getQueryFiltered();
@@ -992,7 +1059,7 @@ function exportExcel(){
     const FAMILY='font-family:微软雅黑,Microsoft YaHei,Arial,sans-serif;';
     const FONT_TH=FAMILY+'font-size:11pt;';
     const FONT_TD=FAMILY+'font-size:10pt;';
-    const alignOf=h=>(h==='需求描述'||h==='方案描述')?'left':'center';
+    const alignOf=h=>(h==='方案描述')?'left':'center';
     let html='<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">';
     html+='<head><meta charset="UTF-8"><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>方案数据</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head><body>';
     html+='<table border="1"><tr>'+headers.map(h=>'<th style="background:#f0f7ff;color:#1e3a5f;font-weight:bold;padding:8px;'+FONT_TH+'text-align:'+(alignOf(h))+';">'+h+'<br>'+(FIELD_EN[h]||'')+'</th>').join('')+'</tr>';
@@ -1043,11 +1110,20 @@ function bindGlobalSearch(){
 
 // ===== 初始化下拉 =====
 function initQueryDropdowns(){
-    _seriesCombobox=initCombobox('qSeries',['全部系列',...unique(rawData.map(d=>d['产品系列']))]);
-    _allTypes=unique(rawData.map(d=>d['类别']).filter(Boolean));
-    // 类别下拉：可选「全部类别」占位
+    _allLines=unique(rawData.map(d=>d['产品线']).filter(Boolean));
+    _allSeries=unique(rawData.map(d=>d['产品系列']).filter(Boolean));
+    _allTypes=unique(rawData.map(d=>d['非标类型']).filter(Boolean));
+    _allModels=unique(rawData.map(d=>d['产品型号']).filter(Boolean));
+    // 产品线下拉：全部产品线 + 实际产品线
+    _lineCombobox=initCombobox('qLine',['全部产品线',..._allLines]);
+    // 产品系列下拉：全部系列 + 实际系列
+    _seriesCombobox=initCombobox('qSeries',['全部系列',..._allSeries]);
+    // 非标类型下拉：全部类别 + 实际类型
     _typeCombobox=initCombobox('qType',['全部类别',..._allTypes]);
-    // 系列选中 → 更新类别选项
+    // 产品型号下拉：全部型号 + 实际型号（根据系列联动）
+    _modelCombobox=initCombobox('qModel',['全部型号',..._allModels]);
+    // 产品线选中 → 联动系列；系列选中 → 联动类型+型号
+    if(_lineCombobox){_lineCombobox.onSelect=onLineChanged;}
     if(_seriesCombobox){_seriesCombobox.onSelect=onSeriesChanged;}
 }
 
@@ -1082,10 +1158,10 @@ function adminLogout(){document.getElementById('adminContent').style.display='no
 function renderAdminRaw(){
     document.getElementById('aRawHead').innerHTML=RAW_FIELDS.map(f=>fieldTh(f)).join('');
     const body=document.getElementById('aRawBody');
-    if(rawData.length===0){body.innerHTML='<tr><td colspan="6" class="no-result">暂无数据，请导入Excel</td></tr>';return;}
+    if(rawData.length===0){body.innerHTML='<tr><td colspan="8" class="no-result">暂无数据，请导入Excel</td></tr>';return;}
     body.innerHTML=rawData.map(row=>'<tr>'+RAW_FIELDS.map(f=>{
         const val=esc(row[f]||'');
-        if(f==='需求描述'||f==='方案描述')return '<td class="col-desc">'+val+'</td>';
+        if(f==='方案描述')return '<td class="col-desc">'+val+'</td>';
         if(f==='产品型号')return '<td class="col-model">'+val+'</td>';
         return '<td>'+val+'</td>';
     }).join('')+'</tr>').join('');
@@ -1125,7 +1201,7 @@ function autoLoadLocalStorage(){
         const data=JSON.parse(saved);
         if(data.rawData&&Array.isArray(data.rawData)&&data.rawData.length>0){
             const first=data.rawData[0];
-            if(first&&first['产品系列']&&(first['类别']||first['产品型号'])){
+            if(first&&first['产品系列']&&(first['非标类型']||first['产品型号'])){
                 rawData=data.rawData;
                 if(data.historyData&&Array.isArray(data.historyData))historyData=data.historyData;
                 console.log('已加载本地数据：'+rawData.length+'条');
@@ -1154,9 +1230,14 @@ function handleExcelImport(event){
             if(importedHistory.length>0)historyData=importedHistory;
             setDirty();
             renderAdminRaw();updateAdminStats();
+            clearCombobox('qLine');
             clearCombobox('qSeries');
             clearCombobox('qType');
+            clearCombobox('qModel');
+            resetLineDropdownToAll();
+            resetSeriesDropdownToAll();
             resetTypeDropdownToAll();
+            resetModelDropdownToAll();
             initQueryDropdowns();renderQueryTable();
             alert('导入成功！\n方案：'+imported.length+'条\n履历：'+historyData.length+'条\n筛选已重置为全部，请切换到速查页查看。\n👉 点击「📤 导出JSON」下载 Non-standard-Solution.json，再手动上传到 GitHub 即可更新线上。');
         }catch(err){console.error(err);alert('Excel解析失败：'+err.message+'\n请按F12查看控制台错误详情');}
@@ -1164,7 +1245,7 @@ function handleExcelImport(event){
     reader.readAsArrayBuffer(file);
     event.target.value='';
 }
-// ===== Excel 数据解析：方案站结构（产品系列/类别/产品型号/需求描述/方案描述/订单号）=====
+// ===== Excel 数据解析：方案站结构（产品线/产品系列/非标类型/产品型号/非标等级/方案描述/订单号/售前工程师）=====
 function parseExcelWorkbook(wb){
     const allRows=[];
     wb.SheetNames.forEach(sheetName=>{
@@ -1190,23 +1271,27 @@ function parseExcelWorkbook(wb){
         const hrow=rows[0]||[];
         const cell=v=>String(v||'').replace(/[\r\n]+/g,'').trim();
         const colIdx={
-            series: (()=>{for(let c=0;c<hrow.length;c++){if(cell(hrow[c]).includes('产品系列'))return c;}return 0;})(),
-            type:   (()=>{for(let c=0;c<hrow.length;c++){if(cell(hrow[c]).includes('类别')&&!cell(hrow[c]).includes('产品系列'))return c;}return 1;})(),
-            model:  (()=>{for(let c=0;c<hrow.length;c++){if(cell(hrow[c]).includes('产品型号'))return c;}return 2;})(),
-            req:    (()=>{for(let c=0;c<hrow.length;c++){if(cell(hrow[c]).includes('需求描述'))return c;}return 3;})(),
-            prop:   (()=>{for(let c=0;c<hrow.length;c++){if(cell(hrow[c]).includes('方案描述'))return c;}return 4;})(),
-            order:  (()=>{for(let c=0;c<hrow.length;c++){if(cell(hrow[c]).includes('订单号'))return c;}return 5;})()
+            line:   (()=>{for(let c=0;c<hrow.length;c++){if(cell(hrow[c]).includes('产品线'))return c;}return 0;})(),
+            series: (()=>{for(let c=0;c<hrow.length;c++){if(cell(hrow[c]).includes('产品系列'))return c;}return 1;})(),
+            type:   (()=>{for(let c=0;c<hrow.length;c++){if(cell(hrow[c]).includes('类型')&&!cell(hrow[c]).includes('产品系列')&&!cell(hrow[c]).includes('等级'))return c;}return 2;})(),
+            model:  (()=>{for(let c=0;c<hrow.length;c++){if(cell(hrow[c]).includes('产品型号'))return c;}return 3;})(),
+            grade:  (()=>{for(let c=0;c<hrow.length;c++){if(cell(hrow[c]).includes('等级'))return c;}return 4;})(),
+            prop:   (()=>{for(let c=0;c<hrow.length;c++){if(cell(hrow[c]).includes('方案描述'))return c;}return 5;})(),
+            order:  (()=>{for(let c=0;c<hrow.length;c++){if(cell(hrow[c]).includes('订单号'))return c;}return 6;})(),
+            eng:    (()=>{for(let c=0;c<hrow.length;c++){if(cell(hrow[c]).includes('售前工程师')||cell(hrow[c]).includes('工程师'))return c;}return 7;})()
         };
         for(let r=1;r<rows.length;r++){
             const row=rows[r];if(!row)continue;
+            const line=String(row[colIdx.line]||'').trim();
             const series=String(row[colIdx.series]||'').trim();
             const type=String(row[colIdx.type]||'').trim();
             const model=String(row[colIdx.model]||'').trim();
-            const req=String(row[colIdx.req]||'').trim();
+            const grade=String(row[colIdx.grade]||'').trim();
             const prop=String(row[colIdx.prop]||'').trim();
             const order=String(row[colIdx.order]||'').trim();
-            if(!series&&!type&&!model&&!req&&!prop&&!order)continue;
-            allRows.push({'产品系列':series,'类别':type,'产品型号':model,'需求描述':req,'方案描述':prop,'订单号':order});
+            const eng=String(row[colIdx.eng]||'').trim();
+            if(!line&&!series&&!type&&!model&&!grade&&!prop&&!order&&!eng)continue;
+            allRows.push({'产品线':line,'产品系列':series,'非标类型':type,'产品型号':model,'非标等级':grade,'方案描述':prop,'订单号':order,'售前工程师':eng});
         }
         }catch(err){console.error('['+sheetName+'] 解析错误',err);}
     });
