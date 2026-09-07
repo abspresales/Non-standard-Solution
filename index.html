@@ -688,6 +688,66 @@ body>div[style*="linear-gradient"] p:last-of-type{font-size:13px!important;line-
 /* 12) 命中高亮：更强对比 */
 mark.qmark{font-weight:800!important;}
 
+/* ===== 提交新方案浮窗 ===== */
+.submit-modal{
+  position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(.96);
+  width:min(620px,94vw);max-height:90vh;overflow:auto;z-index:1100;
+  background:#fff;border-radius:18px;border:1px solid #E1E8F1;
+  box-shadow:0 30px 100px rgba(14,42,74,.40),0 6px 20px rgba(14,42,74,.16);
+  opacity:0;visibility:hidden;transition:opacity .25s,transform .25s;
+}
+.submit-modal.active{opacity:1;visibility:visible;transform:translate(-50%,-50%) scale(1);}
+.submit-body{padding:18px 22px 22px;}
+.submit-tip{
+  background:linear-gradient(135deg,var(--cream-50),var(--cream-100));
+  border:1px solid #F0DBA8;border-left:4px solid var(--orange-500);
+  border-radius:10px;padding:12px 14px;font-size:13px;line-height:1.7;
+  color:var(--ink);margin-bottom:16px;
+}
+.submit-tip b{color:var(--orange-700);}
+.submit-form{display:flex;flex-wrap:wrap;gap:14px 16px;}
+.sf-item{display:flex;flex-direction:column;gap:6px;width:calc(33.333% - 11px);}
+.sf-item.sf-full{width:100%;}
+.sf-lab{font-size:12.5px;font-weight:700;color:#1E3A5F;letter-spacing:.4px;}
+.sf-required .sf-lab::after{content:" *";color:#C0392B;}
+.sf-in{
+  width:100%;box-sizing:border-box;padding:9px 11px;border:1px solid #D7E0EC;border-radius:8px;
+  font-size:13.5px;font-weight:600;color:#1F2B3A;background:#fff;transition:border-color .2s,box-shadow .2s;
+  font-family:inherit;
+}
+.sf-in:focus{border-color:var(--orange-500);box-shadow:var(--ring);outline:none;}
+.sf-ta{resize:vertical;min-height:96px;line-height:1.6;}
+.sf-actions{display:flex;justify-content:flex-end;gap:10px;width:100%;margin-top:6px;}
+@media(max-width:640px){
+  .submit-modal{width:96vw;}
+  .sf-item{width:100%;}
+}
+
+/* ===== 后台待审核队列 ===== */
+.admin-pending{margin-top:20px;padding:16px 18px;background:#FAFBFD;border:1px solid #E1E8F1;border-radius:14px;}
+.admin-pending-head{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:12px;font-size:14px;font-weight:700;color:#1E3A5F;}
+.pending-badge{background:linear-gradient(135deg,#E78131,#D96C1F);color:#fff;border-radius:999px;padding:1px 10px;font-size:12.5px;font-weight:700;margin-left:4px;}
+.admin-pending-list{display:flex;flex-direction:column;gap:10px;}
+.pending-card{border:1px solid #EBD3A8;background:linear-gradient(135deg,#FFFDF8,#FFF7EA);border-radius:12px;padding:12px 14px;}
+.pending-head{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:8px;}
+.pending-status{font-size:12px;font-weight:700;padding:2px 10px;border-radius:999px;background:linear-gradient(135deg,#FDF4E3,#FCE0B0);color:#9B5A0C;border:1px solid #F0C674;}
+.pending-meta{font-size:12px;color:#6B7B92;font-weight:500;}
+.pending-body{font-size:13px;color:#2A3038;line-height:1.7;}
+.pending-body b{color:#1E3A5F;}
+.pending-fields{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px 14px;margin:8px 0;}
+.pending-fields span{font-size:12.5px;color:#33415C;font-weight:500;}
+.pending-fields span b{color:#1E3A5F;font-weight:700;}
+.pending-desc{background:#fff;border:1px solid #F0DBA8;border-radius:8px;padding:8px 10px;font-size:12.5px;color:#24303F;line-height:1.65;margin-top:6px;}
+.pending-actions{display:flex;gap:8px;margin-top:10px;justify-content:flex-end;}
+.pending-btn{border:none;padding:7px 16px;border-radius:8px;font-size:12.5px;font-weight:700;cursor:pointer;transition:all .18s;}
+.pending-btn.approve{background:linear-gradient(135deg,#27AE60,#1E8E4E);color:#fff;box-shadow:0 3px 8px rgba(30,142,78,.28);}
+.pending-btn.approve:hover{transform:translateY(-1px);}
+.pending-btn.reject{background:#fff;color:#C0392B;border:1px solid #E3A5A9;}
+.pending-btn.reject:hover{background:#FDEBEC;}
+.pending-empty{color:#9AA8BC;font-size:13px;font-weight:500;padding:14px;text-align:center;background:#fff;border:1px dashed #D7E0EC;border-radius:10px;}
+
+
+
 </style></head>
 <body>
 <div style="background:linear-gradient(180deg,#EAF2FC,#DEEBFA);padding:20px 24px;color:#fff;text-align:left;">
@@ -763,6 +823,14 @@ mark.qmark{font-weight:800!important;}
             <span style="font-size:13px;color:#4b5563;">左右滑动查看更多列</span>
             <button onclick="scrollAdminTable(200)" style="width:36px;height:36px;border-radius:6px;border:1px solid #d1d5db;background:#fff;color:#6b7280;cursor:pointer;font-size:16px;font-weight:700;display:flex;align-items:center;justify-content:center;transition:all 0.2s;" onmouseover="this.style.background='#f3f4f6'" onmouseout="this.style.background='#fff'">›</button>
         </div>
+        <!-- 待审核队列 -->
+        <div class="admin-pending" id="adminPending">
+            <div class="admin-pending-head">
+                <span>🕒 待审核提交 <span class="pending-badge" id="pendingCount">0</span></span>
+                <span style="font-size:12px;color:#6b7280;font-weight:500;">访问者提交的新方案将在此等待审核，通过后自动发布到速查表（导出JSON上传线上生效）</span>
+            </div>
+            <div id="pendingList" class="admin-pending-list"></div>
+        </div>
     </div>
   </div>
 </div>
@@ -788,10 +856,12 @@ function fieldTh(f,extra){
     return '<th class="'+cls+left+'"><span class="th-zh">'+esc(f)+'</span><span class="th-en">'+esc(FIELD_EN[f]||'')+'</span></th>';
 }
 const STORAGE_KEY='nst_solution_data_v1';
+const PENDING_KEY='nst_solution_pending_v1';
 let isDirty=false;
 
 let rawData=[];
 let historyData=[];
+let pendingSubmissions=[]; // 待审核队列：所有人可提交，管理员审核通过后并入 rawData
 let _allLines=[];
 let _allSeries=[];
 let _allTypes=[];
@@ -1150,7 +1220,7 @@ function expandAdminModal(){
 function scrollAdminTable(delta){const wrap=document.getElementById('adminTableWrap');if(wrap){wrap.scrollLeft+=delta;}}
 function adminLogin(){
     const pwd=document.getElementById('adminPwd').value;
-    if(pwd==='123321'){document.getElementById('adminLogin').style.display='none';document.getElementById('adminContent').style.display='block';renderAdminRaw();updateAdminStats();}
+    if(pwd==='123321'){document.getElementById('adminLogin').style.display='none';document.getElementById('adminContent').style.display='block';loadPending();renderAdminRaw();updateAdminStats();}
     else{alert('密码错误');}
 }
 function adminLogout(){document.getElementById('adminContent').style.display='none';document.getElementById('adminLogin').style.display='block';document.getElementById('adminPwd').value='';}
@@ -1169,16 +1239,129 @@ function updateAdminStats(){
     document.getElementById('statRaw').textContent=rawData.length;
     document.getElementById('statHistory').textContent=historyData.length;
     document.getElementById('statSeries').textContent=unique(rawData.map(d=>d['产品系列'])).length;
+    renderAdminPending();
+}
+// ===== 后台待审核：渲染 + 通过/驳回 =====
+function renderAdminPending(){
+    const list=document.getElementById('pendingList');
+    const badge=document.getElementById('pendingCount');
+    if(!list)return;
+    if(badge)badge.textContent=pendingSubmissions.length;
+    if(pendingSubmissions.length===0){list.innerHTML='<div class="pending-empty">暂无待审核提交</div>';return;}
+    const RAWF=['产品线','产品系列','非标类型','产品型号','非标等级','订单号','售前工程师'];
+    list.innerHTML=pendingSubmissions.map((item,i)=>{
+        const t=item._submitTime?fmtDateTime(item._submitTime):'';
+        return '<div class="pending-card">'
+            +'<div class="pending-head"><span class="pending-status">待审核</span>'
+            +'<span class="pending-meta">提交人：'+esc(item._submitName||'（未署名）')+(t?' · '+esc(t):'')+'</span></div>'
+            +'<div class="pending-fields">'+RAWF.map(f=>'<span>'+esc(f)+'：<b>'+esc(item[f]||'')+'</b></span>').join('')+'</div>'
+            +'<div class="pending-desc"><b>方案描述：</b>'+esc(item['方案描述']||'')+'</div>'
+            +'<div class="pending-actions">'
+            +'<button class="pending-btn approve" onclick="auditApprove('+i+')">✔ 通过并发布</button>'
+            +'<button class="pending-btn reject" onclick="auditReject('+i+')">✕ 驳回</button>'
+            +'</div></div>';
+    }).join('');
+}
+function auditApprove(idx){
+    const item=pendingSubmissions[idx];
+    if(!item)return;
+    if(!confirm('确定通过并发布这条方案吗？\n\n产品线：'+item['产品线']+' / '+item['产品系列']+' / '+item['产品型号']+'\n订单号：'+item['订单号']+'\n\n通过后将并入速查表（需导出JSON上传线上生效）。'))return;
+    try{
+        // 并入 rawData（去掉下划线内部字段）
+        const pub={'产品线':item['产品线'],'产品系列':item['产品系列'],'非标类型':item['非标类型'],'产品型号':item['产品型号'],'非标等级':item['非标等级'],'方案描述':item['方案描述'],'订单号':item['订单号'],'售前工程师':item['售前工程师']};
+        rawData.push(pub);
+        // 写履历
+        const today=new Date().toISOString().slice(0,10);
+        historyData.push({'日期':today,'修订内容':'审核通过并发布新方案：'+item['产品型号']+'（订单'+item['订单号']+'）','编辑人':item['_submitName']||'（提交者-管理员通过）'});
+        // 从待审核移除
+        pendingSubmissions.splice(idx,1);
+        onPendingChanged();
+        setDirty();
+        renderAdminRaw();updateAdminStats();
+        alert('✅ 已通过并发布！\n\n该方案已并入速查表，请点击「📤 导出JSON」生成 Non-standard-Solution.json，再上传到 GitHub 仓库即可让线上页面展示。');
+    }catch(e){alert('审核失败：'+e.message);}
+}
+function auditReject(idx){
+    const item=pendingSubmissions[idx];
+    if(!item)return;
+    if(!confirm('确定驳回这条提交吗？\n\n'+item['产品型号']+'（订单'+item['订单号']+'）\n\n驳回后该提交将从待审核列表移除（不可恢复）。'))return;
+    pendingSubmissions.splice(idx,1);
+    onPendingChanged();
+    updateAdminStats();
+    alert('已驳回该提交。');
+}
+function fmtDateTime(iso){
+    try{const d=new Date(iso);if(isNaN(d))return String(iso||'');const p=n=>String(n).padStart(2,'0');return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())+' '+p(d.getHours())+':'+p(d.getMinutes());}catch(e){return String(iso||'');}
 }
 function setDirty(){isDirty=true;document.getElementById('dirtyIndicator').className='dirty-indicator';document.getElementById('dirtyIndicator').textContent='⚠ 有未保存的修改';}
 function clearDirty(){isDirty=false;document.getElementById('dirtyIndicator').className='clean-indicator';document.getElementById('dirtyIndicator').textContent='✓ 已保存';}
 function saveToLocal(){
     try{
         localStorage.setItem(STORAGE_KEY,JSON.stringify({rawData:rawData,historyData:historyData}));
+        savePending();
         clearDirty();
         alert('保存成功！共'+rawData.length+'条方案，'+historyData.length+'条履历。');
     }catch(e){alert('保存失败：'+e.message);}
 }
+
+// ===== 待审核队列：持久化 =====
+function savePending(){
+    try{localStorage.setItem(PENDING_KEY,JSON.stringify(pendingSubmissions));}
+    catch(e){console.warn('待审核数据保存失败',e);}
+}
+function loadPending(){
+    try{
+        const saved=localStorage.getItem(PENDING_KEY);
+        if(saved){pendingSubmissions=JSON.parse(saved);if(!Array.isArray(pendingSubmissions))pendingSubmissions=[];}
+    }catch(e){pendingSubmissions=[];}
+    return pendingSubmissions;
+}
+function onPendingChanged(){savePending();if(document.getElementById('adminContent')&&document.getElementById('adminContent').style.display==='block'){renderAdminPending();updateAdminStats();}}
+// ===== 提交弹窗 =====
+function openSubmitModal(){
+    document.getElementById('submitOverlay').classList.add('active');
+    document.getElementById('submitModal').classList.add('active');
+    document.body.style.overflow='hidden';
+    // 清空字段
+    ['sf_line','sf_series','sf_type','sf_model','sf_grade','sf_order','sf_eng','sf_prop'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+}
+function closeSubmitModal(){
+    document.getElementById('submitOverlay').classList.remove('active');
+    document.getElementById('submitModal').classList.remove('active');
+    document.body.style.overflow='';
+}
+function submitProposal(){
+    try{
+        const line=document.getElementById('sf_line').value.trim();
+        const series=document.getElementById('sf_series').value.trim();
+        const type=document.getElementById('sf_type').value.trim();
+        const model=document.getElementById('sf_model').value.trim();
+        const grade=document.getElementById('sf_grade').value;
+        const order=document.getElementById('sf_order').value.trim();
+        const eng=document.getElementById('sf_eng').value.trim();
+        const prop=document.getElementById('sf_prop').value.trim();
+        if(!line){alert('请填写「产品线」（必填项）');document.getElementById('sf_line').focus();return;}
+        if(!prop){alert('请填写「方案描述」（必填项）');document.getElementById('sf_prop').focus();return;}
+        // 重复校验：与已发布数据、待审核数据在「产品线+产品系列+产品型号+订单号」上重复则拦截
+        const dupSig=function(d){return [d['产品线'],d['产品系列'],d['产品型号'],d['订单号']].map(x=>String(x||'').trim()).join('||');};
+        const sig=dupSig({'产品线':line,'产品系列':series,'产品型号':model,'订单号':order});
+        if(rawData.some(d=>dupSig(d)===sig)){alert('该方案（产品线/系列/型号/订单号相同）已在系统中发布，请勿重复提交。');return;}
+        if(pendingSubmissions.some(d=>dupSig(d)===sig)){alert('该方案已在待审核队列中，请勿重复提交。');return;}
+        const now=new Date();
+        const item={
+            '产品线':line,'产品系列':series,'非标类型':type,'产品型号':model,'非标等级':grade,
+            '方案描述':prop,'订单号':order,'售前工程师':eng,
+            '_submitTime':now.toISOString(),
+            '_submitName':eng||'（未署名）',
+            '_auditStatus':'待审核'
+        };
+        pendingSubmissions.unshift(item); // 新提交放最前
+        savePending();
+        closeSubmitModal();
+        alert('✅ 提交成功！\n\n您的方案已进入【待审核】队列。管理员审核通过后将自动发布到速查表。\n提交的内容不可删除，请知悉。');
+    }catch(e){alert('提交失败：'+e.message);}
+}
+
 function exportDataJson(){
     try{
         localStorage.setItem(STORAGE_KEY,JSON.stringify({rawData:rawData,historyData:historyData}));
@@ -1351,6 +1534,7 @@ async function loadDataFromJson(){
     return false;
 }
 async function initPage(){
+    loadPending();
     const hasLocal=autoLoadLocalStorage();
     if(!hasLocal||rawData.length===0){
         if(typeof DEFAULT_DATA!=='undefined'&&DEFAULT_DATA.rawData&&DEFAULT_DATA.rawData.length>0){
@@ -1402,11 +1586,15 @@ document.addEventListener('keydown',function(e){
   if(e.key==='Escape'){
     if(document.getElementById('historyModal').classList.contains('active'))closeHistoryModal();
     if(document.getElementById('adminModal').classList.contains('active'))closeAdminModal();
+    if(document.getElementById('submitModal').classList.contains('active'))closeSubmitModal();
   }
 });
 
 
 </script>
+<div onclick="openSubmitModal()" style="position:fixed;bottom:96px;right:18px;width:26px;height:26px;background:#E78131;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 3px 10px rgba(0,0,0,0.25);color:#fff;z-index:1000;transition:transform 0.2s;" onmouseover="this.style.transform='scale(1.08)'" onmouseout="this.style.transform='scale(1)'" title="提交新方案">
+  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+</div>
 <div onclick="openHistoryModal()" style="position:fixed;bottom:60px;right:18px;width:26px;height:26px;background:#597a9b;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 3px 10px rgba(0,0,0,0.25);color:#fff;z-index:1000;transition:transform 0.2s;" onmouseover="this.style.transform='scale(1.08)'" onmouseout="this.style.transform='scale(1)'">
   <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></svg>
 </div>
@@ -1426,6 +1614,55 @@ document.addEventListener('keydown',function(e){
       <thead><tr><th style="width:120px;">日期</th><th>修订内容</th><th style="width:100px;">编辑人</th></tr></thead>
       <tbody id="historyTableBody"></tbody>
     </table>
+  </div>
+</div>
+
+<!-- 提交新方案浮窗（所有人可填，管理员审核后发布） -->
+<div class="modal-overlay" id="submitOverlay" onclick="closeSubmitModal()"></div>
+<div class="submit-modal" id="submitModal" role="dialog" aria-modal="true">
+  <div class="modal-header">
+    <h3>✏ 提交新方案 <span class="modal-count" id="submitModalCount">待管理员审核</span></h3>
+    <button class="modal-close" onclick="closeSubmitModal()" aria-label="关闭">✕</button>
+  </div>
+  <div class="submit-body">
+    <div class="submit-tip">📌 任何人都可以提交新的非标方案。提交后进入<b>待管理员审核</b>，审核通过才会发布到上方速查表。提交的内容<b>不可被删除</b>，请确认无误后再提交。</div>
+    <div class="submit-form">
+      <label class="sf-item sf-required"><span class="sf-lab">产品线</span>
+        <input type="text" id="sf_line" placeholder="如：舞台产品线" class="sf-in">
+      </label>
+      <label class="sf-item"><span class="sf-lab">产品系列</span>
+        <input type="text" id="sf_series" placeholder="如：FL V2" class="sf-in">
+      </label>
+      <label class="sf-item"><span class="sf-lab">非标类型</span>
+        <input type="text" id="sf_type" placeholder="如：更换LED灯" class="sf-in">
+      </label>
+      <label class="sf-item"><span class="sf-lab">产品型号</span>
+        <input type="text" id="sf_model" placeholder="如：FL2.9W V2" class="sf-in">
+      </label>
+      <label class="sf-item"><span class="sf-lab">非标等级</span>
+        <select id="sf_grade" class="sf-in">
+          <option value="">请选择等级</option>
+          <option>非标1级</option>
+          <option>非标2级</option>
+          <option>非标3级</option>
+          <option>非标4级</option>
+          <option>非标5级</option>
+        </select>
+      </label>
+      <label class="sf-item"><span class="sf-lab">订单号</span>
+        <input type="text" id="sf_order" placeholder="如：HK253379A" class="sf-in">
+      </label>
+      <label class="sf-item"><span class="sf-lab">售前工程师</span>
+        <input type="text" id="sf_eng" placeholder="如：王毓" class="sf-in">
+      </label>
+      <label class="sf-item sf-full sf-required"><span class="sf-lab">方案描述</span>
+        <textarea id="sf_prop" rows="5" placeholder="请详细描述该非标方案的内容、改动要求、注意事项等" class="sf-in sf-ta"></textarea>
+      </label>
+      <div class="sf-actions">
+        <button class="btn" onclick="closeSubmitModal()">取消</button>
+        <button class="btn btn-primary" onclick="submitProposal()" style="background:linear-gradient(135deg,#E78131,#D96C1F);color:#fff;box-shadow:0 4px 12px rgba(231,129,49,.30);">✔ 提交审核</button>
+      </div>
+    </div>
   </div>
 </div>
 </body>
