@@ -815,7 +815,9 @@ function initCombobox(id, options){
     if(def&&!opts.includes(def)){opts=[def,...opts];}
     function renderList(filter){
         const kw=(filter||'').trim().toLowerCase();
-        const filtered=(kw&&kw!==def.toLowerCase())?opts.filter(o=>String(o).toLowerCase().includes(kw)):opts;
+        let filtered=(kw&&kw!==def.toLowerCase())?opts.filter(o=>String(o).toLowerCase().includes(kw)):opts;
+        // 去掉已选值本身：当前下拉已选中的具体值不再作为可选项出现（保留「全部」默认项便于复位）
+        if(input.value&&input.value!==def&&opts.includes(input.value)){filtered=filtered.filter(o=>o!==input.value);}
         if(filtered.length===0){list.innerHTML='<div class="combobox-empty">无匹配选项</div>';return;}
         list.innerHTML=filtered.map(o=>'<div class="combobox-item'+(input.value===o?' selected':'')+'" data-value="'+esc(o)+'">'+esc(o)+'</div>').join('');
     }
@@ -823,7 +825,7 @@ function initCombobox(id, options){
         if(cb.classList.contains('disabled'))return;
         closeAllCombobox();
         cb.classList.add('open');
-        renderList(input.value);
+        renderList(''); // 打开时列出全部候选项（剔除已选值），避免把已选值当作搜索词过滤
         list.scrollTop=0;
         fitListWidth();
     }
@@ -873,63 +875,35 @@ function setComboboxValue(id,value){const cb=document.getElementById('cb-'+id);i
 function clearCombobox(id){const cb=document.getElementById('cb-'+id);if(cb){const def=cb.getAttribute('data-default')||'';cb.querySelector('.combobox-input').value=def;}}
 function setComboboxDisabled(id,disabled){const cb=document.getElementById('cb-'+id);if(!cb)return;cb.classList.toggle('disabled',disabled);cb.querySelector('.combobox-input').disabled=disabled;if(disabled)cb.classList.remove('open');}
 
-// ===== 级联筛选：产品线 → 产品系列 → 非标类型 / 产品型号 =====
-// 非标类型选项：按【当前产品线+产品系列】过滤；series='全部系列'/空 -> 仅按当前产品线过滤
-function typeOptionsForSeries(series){
-    const ln=getComboboxValue('qLine');
+// ===== 预估站式「上下文收敛」下拉逻辑 =====
+// 层级前向收敛：上游维度收敛下游，但下游不反向收敛上游（最高层恒全量，避免选了下游锁死上游）。
+// 每个下拉可选项 = 在「其上游已筛维度」约束下该字段的真实出现值；恒以「全部XX」带头，选中值失效自动置回全部。
+const P_QUERY_DEFS={
+    qLine:  {field:'产品线',  def:'全部产品线', up:[]},
+    qSeries:{field:'产品系列',def:'全部系列',   up:['qLine']},
+    qType:  {field:'非标类型',def:'全部类别',   up:['qLine','qSeries']},
+    qModel: {field:'产品型号',def:'全部型号',   up:['qLine','qSeries']}
+};
+// 计算某下拉可选项：仅用其上游已筛维度过滤数据，取该字段真实出现值（保持出现顺序）
+function pFieldUniqueOptions(fieldId){
+    const cfg=P_QUERY_DEFS[fieldId];
     let pool=rawData;
-    if(ln&&ln!=='全部产品线')pool=pool.filter(d=>String(d['产品线']||'').trim()===ln.trim());
-    if(series&&series!=='全部系列')pool=pool.filter(d=>String(d['产品系列']||'').trim()===series.trim());
-    return unique(pool.map(d=>String(d['非标类型']||'').trim()).filter(Boolean));
+    (cfg.up||[]).forEach(parent=>{
+        const cur=getComboboxValue(parent);
+        if(cur&&cur!==P_QUERY_DEFS[parent].def){
+            pool=pool.filter(d=>String(d[P_QUERY_DEFS[parent].field]||'').trim()===cur.trim());
+        }
+    });
+    return [cfg.def,...unique(pool.map(d=>String(d[cfg.field]||'').trim()).filter(Boolean))];
 }
-// 产品型号选项：按【当前产品线+产品系列】过滤
-function modelOptionsForSeries(series){
-    const ln=getComboboxValue('qLine');
-    let pool=rawData;
-    if(ln&&ln!=='全部产品线')pool=pool.filter(d=>String(d['产品线']||'').trim()===ln.trim());
-    if(series&&series!=='全部系列')pool=pool.filter(d=>String(d['产品系列']||'').trim()===series.trim());
-    return unique(pool.map(d=>String(d['产品型号']||'').trim()).filter(Boolean));
+// 重建全部下拉：任一筛选变化后调用（_setOpts 内部会自动把失效的选中值置回「全部」）
+function rebuildAllQueryOptions(){
+    Object.keys(P_QUERY_DEFS).forEach(id=>{
+        const ctrl={qLine:_lineCombobox,qSeries:_seriesCombobox,qType:_typeCombobox,qModel:_modelCombobox}[id];
+        if(ctrl)ctrl._setOpts(pFieldUniqueOptions(id));
+    });
 }
-function onSeriesChanged(value){
-    const types=typeOptionsForSeries(value);
-    if(_typeCombobox)_typeCombobox._setOpts(['全部类别',...types]);
-    const cur=getComboboxValue('qType');
-    if(cur!=='全部类别'&&!types.includes(cur))setComboboxValue('qType','全部类别');
-    const models=modelOptionsForSeries(value);
-    if(_modelCombobox)_modelCombobox._setOpts(['全部型号',...models]);
-    const curM=getComboboxValue('qModel');
-    if(curM!=='全部型号'&&!models.includes(curM))setComboboxValue('qModel','全部型号');
-    renderQueryTable();
-}
-function onLineChanged(value){
-    // 产品线变化 -> 重置系列选项
-    const sers=seriesOptionsForLine(value);
-    if(_seriesCombobox)_seriesCombobox._setOpts(['全部系列',...sers]);
-    const cur=getComboboxValue('qSeries');
-    if(cur!=='全部系列'&&!sers.includes(cur))setComboboxValue('qSeries','全部系列');
-    // 系列重置后 -> 类型按当前(线+系列)联动
-    onSeriesChanged(getComboboxValue('qSeries'));
-}
-function seriesOptionsForLine(line){
-    if(!line||line==='全部产品线')return unique(rawData.map(d=>String(d['产品系列']||'').trim()).filter(Boolean));
-    return unique(rawData.filter(d=>String(d['产品线']||'').trim()===line.trim()).map(d=>String(d['产品系列']||'').trim()).filter(Boolean));
-}
-function resetTypeDropdownToAll(){
-    if(_typeCombobox)_typeCombobox._setOpts(['全部类别',..._allTypes]);
-    setComboboxValue('qType','全部类别');
-}
-function resetModelDropdownToAll(){
-    if(_modelCombobox)_modelCombobox._setOpts(['全部型号',..._allModels]);
-    setComboboxValue('qModel','全部型号');
-}
-function resetSeriesDropdownToAll(){
-    if(_seriesCombobox)_seriesCombobox._setOpts(['全部系列',..._allSeries]);
-    setComboboxValue('qSeries','全部系列');
-}
-function resetLineDropdownToAll(){
-    if(_lineCombobox)_lineCombobox._setOpts(['全部产品线',..._allLines]);
-    setComboboxValue('qLine','全部产品线');
-}
+
 
 function getGlobalKeyword(){const el=document.getElementById('qGlobalSearch');return el?el.value.trim():'';}
 function getGlobalKeywords(){const kw=getGlobalKeyword();if(!kw)return [];return kw.split(/[\s,，、]+/).map(x=>x.trim()).filter(Boolean);}
@@ -959,10 +933,8 @@ function highlightWord(text,keywords){
     return t;
 }
 function onQueryFilter(){
-    const ln=getComboboxValue('qLine');
-    if(_lineCombobox)onLineChanged(ln);
-    const s=getComboboxValue('qSeries');
-    if(_seriesCombobox)onSeriesChanged(s);
+    // 预估站式：任一筛选变化 -> 基于当前其它已筛维度重建所有下拉可选项（剔除已筛掉的值）
+    rebuildAllQueryOptions();
     currentPage=1;
     renderActiveFilters();
     renderQueryTable();
@@ -972,18 +944,14 @@ function resetQueryFilter(){
     clearCombobox('qSeries');
     clearCombobox('qType');
     clearCombobox('qModel');
-    resetLineDropdownToAll();
-    resetSeriesDropdownToAll();
-    resetTypeDropdownToAll();
-    resetModelDropdownToAll();
+    rebuildAllQueryOptions(); // 恢复全量选项
     currentPage=1;
     renderActiveFilters();
     renderQueryTable();
 }
 function removeFilterChip(id){
     clearCombobox(id);
-    if(id==='qLine'){resetSeriesDropdownToAll();resetTypeDropdownToAll();resetModelDropdownToAll();}
-    else if(id==='qSeries'){resetTypeDropdownToAll();resetModelDropdownToAll();}
+    rebuildAllQueryOptions(); // 基于其余已筛维度重建所有下拉可选项
     currentPage=1;
     renderActiveFilters();
     renderQueryTable();
@@ -1151,21 +1119,11 @@ function bindGlobalSearch(){
 
 // ===== 初始化下拉 =====
 function initQueryDropdowns(){
-    _allLines=unique(rawData.map(d=>d['产品线']).filter(Boolean));
-    _allSeries=unique(rawData.map(d=>d['产品系列']).filter(Boolean));
-    _allTypes=unique(rawData.map(d=>d['非标类型']).filter(Boolean));
-    _allModels=unique(rawData.map(d=>d['产品型号']).filter(Boolean));
-    // 产品线下拉：全部产品线 + 实际产品线
-    _lineCombobox=initCombobox('qLine',['全部产品线',..._allLines]);
-    // 产品系列下拉：全部系列 + 实际系列
-    _seriesCombobox=initCombobox('qSeries',['全部系列',..._allSeries]);
-    // 非标类型下拉：全部类别 + 实际类型
-    _typeCombobox=initCombobox('qType',['全部类别',..._allTypes]);
-    // 产品型号下拉：全部型号 + 实际型号（根据系列联动）
-    _modelCombobox=initCombobox('qModel',['全部型号',..._allModels]);
-    // 产品线选中 → 联动系列；系列选中 → 联动类型+型号
-    if(_lineCombobox){_lineCombobox.onSelect=onLineChanged;}
-    if(_seriesCombobox){_seriesCombobox.onSelect=onSeriesChanged;}
+    // 用预估站式上下文收敛初始化：每个下拉候选 = 当前其它已筛维度下的真实值（初始全部为「全部XX」）
+    _lineCombobox=initCombobox('qLine',pFieldUniqueOptions('qLine'));
+    _seriesCombobox=initCombobox('qSeries',pFieldUniqueOptions('qSeries'));
+    _typeCombobox=initCombobox('qType',pFieldUniqueOptions('qType'));
+    _modelCombobox=initCombobox('qModel',pFieldUniqueOptions('qModel'));
 }
 
 // ===== 后台维护 =====
@@ -1303,11 +1261,7 @@ function doExcelImport(file){
             clearCombobox('qSeries');
             clearCombobox('qType');
             clearCombobox('qModel');
-            resetLineDropdownToAll();
-            resetSeriesDropdownToAll();
-            resetTypeDropdownToAll();
-            resetModelDropdownToAll();
-            initQueryDropdowns();renderQueryTable();
+            initQueryDropdowns();rebuildAllQueryOptions();renderQueryTable();
             alert('导入成功！\n方案：'+imported.length+'条\n履历：'+historyData.length+'条\n筛选已重置为全部，请切换到速查页查看。\n👉 点击「📤 导出JSON」下载 Non-standard-Solution.json，再手动上传到 GitHub 即可更新线上。');
         }catch(err){console.error(err);alert('Excel解析失败：'+err.message+'\n请按F12查看控制台错误详情');}
     };
