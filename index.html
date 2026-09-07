@@ -882,7 +882,7 @@ mark.qmark{font-weight:800!important;}
 
 const DEFAULT_DATA={"rawData": [{"产品线": "Proav产品线", "产品系列": "NX", "非标类型": "更换系统卡", "产品型号": "NX2.5-V1X", "非标等级": "非标3级", "方案描述": "NX2.5-V1X更换A10S PRO卡，定制接收卡程序支持峰值亮度功能，重新做FCC认证", "订单号": "US250088A", "售前工程师": "汪涛"}, {"产品线": "广告产品线", "产品系列": "A25", "非标类型": "更换LED灯", "产品型号": "NT2.9W V2", "非标等级": "非标3级", "方案描述": "整单换国星白灯31002SMD00000R143 009 1415 B 白灯 NH-Z1415RGBA-SG，亮度做到4500nit，订单RD250113A做过", "订单号": "HK253379A", "售前工程师": "王毓"}, {"产品线": "舞台产品线", "产品系列": "FL V2", "非标类型": "更换LED灯", "产品型号": "FL2.9W V2", "非标等级": "非标3级", "方案描述": "整单换国星白灯31002SMD00000R143 009 1415 B 白灯 NH-Z1415RGBA-SG，亮度做到4500nit。", "订单号": "HK253379B", "售前工程师": "王毓"}, {"产品线": "舞台产品线", "产品系列": "NT V2", "非标类型": "更换系统卡", "产品型号": "NT2.6 V2", "非标等级": "非标4级", "方案描述": "整单接收卡换为A10s Pro接收卡，料号为：30190RXA10S00R029（内含诺瓦核心板嵌入式软件V1.7）中性版 A10s Pro 诺瓦，订单HK252884B做过。", "订单号": "HK261678A", "售前工程师": "王毓"}, {"产品线": "广告产品线", "产品系列": "A25", "非标类型": "应用场景", "产品型号": "A0625", "非标等级": "非标4级", "方案描述": "海边环境，模组PCB背面，接收卡 ，HUB板喷三防漆，使用不锈钢连接片和螺丝，包括备品模组PCB背面喷三防，备品转接板和接收卡均需刷三防；如使用库存单，则模组 PCB 背面和备品模组 PCB 背面无需额外喷三防。", "订单号": "HK262233A", "售前工程师": "杜辉"}], "historyData": [{"日期": "2026-09-05", "修订内容": "首版非标方案统计查询表", "编辑人": "杜辉"}]};
 const RAW_FIELDS=['产品线','产品系列','非标类型','产品型号','非标等级','方案描述','订单号','售前工程师'];
-const FIELD_EN={'产品线':'Product Line','产品系列':'Product Series','非标类型':'Type','产品型号':'Product Model','非标等级':'Non-standard Grade','方案描述':'Proposal Description','订单号':'Order Number','售前工程师':'Pre-sales Engineer'};
+const FIELD_EN={'产品线':'Product Line','产品系列':'Product Series','非标类型':'Type','产品型号':'Product Model','非标等级':'N-Std Grade','方案描述':'Proposal Description','订单号':'Order Number','售前工程师':'Pre-sales Engineer'};
 // 表头生成：i===0 首列冻结；需求/方案描述表头左对齐(th-left)
 function fieldTh(f,extra){
     const cls=((extra||'').trim()||'qth');
@@ -1094,8 +1094,8 @@ function onRemoveChip(key){if(key==='_search'){clearGlobalSearch();return;}remov
 function onClearAllFilters(){resetQueryFilter();clearGlobalSearch(true);}
 let currentPage=1;
 const PAGE_SIZE=20;
-// 列宽：产品线/系列/类型/型号/等级较窄，方案描述较宽，工程师最窄
-const COL_WIDTHS={'产品线':'9%','产品系列':'10%','非标类型':'13%','产品型号':'12%','非标等级':'11%','方案描述':'25%','订单号':'11%','售前工程师':'9%'};
+// 列宽：产品线/系列/类型/型号/等级较窄，方案描述较宽，工程师加宽以容纳英文一行
+const COL_WIDTHS={'产品线':'9%','产品系列':'10%','非标类型':'13%','产品型号':'12%','非标等级':'11%','方案描述':'22%','订单号':'11%','售前工程师':'12%'};
 
 function renderQueryTable(){
     const data=getQueryFiltered();
@@ -1812,7 +1812,6 @@ document.addEventListener('keydown',function(e){
           <option>非标2级</option>
           <option>非标3级</option>
           <option>非标4级</option>
-          <option>非标5级</option>
         </select>
       </label>
       <label class="sf-item"><span class="sf-lab">订单号</span>
