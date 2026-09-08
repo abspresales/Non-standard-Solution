@@ -487,7 +487,7 @@ body{
 #qTable tbody tr{transition:background .16s var(--e-sm);}
 #qTable tbody tr:nth-child(even){background:#FAFCFE;}
 #qTable tbody tr:hover,#qTable tbody tr:nth-child(even):hover{background:#FDF4E3;}
-#qTable tbody tr:hover td.col-freeze{background:#FCE7BD;}
+#qTable tbody tr:hover td.col-freeze,#qTable tbody tr:nth-child(even):hover td.col-freeze{background:#FDF4E3;}
 #qTable td.col-freeze{background:#F4F7FB;border-right:1px solid #D7E0EC;}
 #qTable tbody tr:nth-child(even) td.col-freeze{background:#F9FBFD;}
 #qBody tr{animation:rowIn .34s var(--e-out) backwards;}
@@ -834,9 +834,12 @@ html[data-theme="dark"] .history-year-count{background:#1c2430!important;color:#
 /* 表格背景/冻结列 → 深色（覆盖浅色高特异性规则） */
 html[data-theme="dark"] #qTable td.col-freeze{background:#1c2430!important;}
 html[data-theme="dark"] #qTable tbody tr:nth-child(even) td.col-freeze{background:#1c2430!important;}
+/* 统一所有行 hover：整行（普通列+冻结列）背景一致 #2b3646，奇数/偶数行表现相同，消除「只有产品线单元格变色」 */
+html[data-theme="dark"] #qTable tbody tr:hover,
 html[data-theme="dark"] #qTable tbody tr:nth-child(even):hover,
+html[data-theme="dark"] #qTable tbody tr:hover td,
 html[data-theme="dark"] #qTable tbody tr:nth-child(even):hover td{background:#2b3646!important;}
-html[data-theme="dark"] #qTable tbody tr:hover td.col-freeze{background:#2b3646!important;}
+html[data-theme="dark"] #qTable tbody tr:hover td.col-freeze,
 html[data-theme="dark"] #qTable tbody tr:nth-child(even):hover td.col-freeze{background:#2b3646!important;}
 html[data-theme="dark"] #qTable thead th.col-freeze{background:#26313f!important;}
 html[data-theme="dark"] #qTable tbody tr{background:transparent!important;}
@@ -884,6 +887,20 @@ html[data-theme="dark"] .admin-header{background:#1c2430!important;border-color:
 html[data-theme="dark"] .admin-header .clean-indicator{color:#7fc08a!important;}
 html[data-theme="dark"] .pagination{background:#1c2430!important;border-color:#2b3646!important;}
 html[data-theme="dark"] .page-info{color:#8fa0b3!important;}
+/* ===== 提交新方案弹窗 深色（对齐后台弹窗基准：白底→#1c2430，标签/内容/提示框可读） ===== */
+html[data-theme="dark"] .submit-modal{background:#1c2430!important;border-color:#2b3646!important;box-shadow:0 20px 60px rgba(0,0,0,.5)!important;}
+html[data-theme="dark"] .modal-header{background:#1c2430!important;color:#e8edf3!important;border-bottom:1px solid #2b3646!important;}
+html[data-theme="dark"] .submit-modal .modal-count{background:#2b3646!important;color:#9fc7f5!important;}
+html[data-theme="dark"] .sf-lab{color:#c9d3df!important;}
+html[data-theme="dark"] .sf-required .sf-lab::after{color:#f08a7a!important;}
+html[data-theme="dark"] .sf-in{background:#141a22!important;border-color:#34404f!important;color:#e2e9f2!important;}
+html[data-theme="dark"] .sf-in:hover{border-color:#3a4a5f!important;}
+html[data-theme="dark"] .sf-in:focus{border-color:#E78131!important;box-shadow:var(--ring)!important;}
+html[data-theme="dark"] .sf-in::placeholder{color:#8fa0b3!important;}
+html[data-theme="dark"] .submit-tip{background:#2b3646!important;border-color:#3a4a5f!important;border-left-color:#E78131!important;color:#c9d3df!important;}
+html[data-theme="dark"] .submit-tip b{color:#f4b15f!important;}
+html[data-theme="dark"] .submit-body{background:#1c2430!important;}
+html[data-theme="dark"] .submit-modal::-webkit-scrollbar-thumb{background:#2b3646!important;border-radius:4px;}
 /* ===== 搜索/筛选下拉框 深色（对齐线材站基准：下拉内容可读） ===== */
 html[data-theme="dark"] .combobox-list{background:#1c2430!important;border-color:#34404f!important;box-shadow:0 8px 24px rgba(0,0,0,.5)!important;}
 html[data-theme="dark"] .combobox-item,html[data-theme="dark"] .combobox-item span{color:#c9d3df!important;}
