@@ -669,6 +669,14 @@ h1,h2,h3,h4,strong,b{font-weight:700;color:#2A2F38;}
 #qTable td.col-desc{min-width:0;}
 @media(max-width:640px){
   #qTable th,#qTable td{white-space:normal;}
+  /* 数据表移动端：关键列保底最小宽度，避免 table-layout:fixed 把列压到过窄(30px)看不见，
+     触发 .table-wrap overflow-x 横向滚动（对齐线材站：列 min-width 撑开 → 横滚） */
+  #qTable td.col-freeze{min-width:104px!important;max-width:104px!important;}
+  #qTable td.col-model,#qTable td.col-desc{min-width:150px!important;}
+  #qTable td{min-width:92px!important;}
+  #qTable{min-width:1050px!important;}
+  /* 移动端悬浮按钮放大到触摸友好尺寸(≥44px)，覆盖内联 width/height */
+  div[onclick="openSubmitModal()"],div[onclick="openHistoryModal()"],div[onclick="openAdminModal()"]{width:44px!important;height:44px!important;font-size:16px!important;}
 }
 
 /* ==================================================================
